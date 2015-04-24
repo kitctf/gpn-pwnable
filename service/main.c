@@ -86,8 +86,6 @@ int read_int() {
     int res = scanf("%d", &x);
     if (res == EOF)
         exit(0);
-    if (res == 0)
-        return -1;
     for (;;) {
         int c = getchar();
         if (c == EOF)
@@ -95,6 +93,8 @@ int read_int() {
         if (c == '\n')
             break;
     }
+    if (res == 0)
+        return -1;
     return x;
 }
 
