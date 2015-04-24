@@ -410,10 +410,11 @@ void drop_privs() {
         fprintf(stderr, "ERROR User %s does not exist\n", sys_username);
         exit(EXIT_FAILURE);
     }
-    if (setuid(pw->pw_uid) ||
-            seteuid(pw->pw_uid) ||
-            setgid(pw->pw_gid)) {
-        perror("ERROR on setuid()");
+    if (setgid(pw->pw_gid) ||
+            setegid(pw->pw_gid) ||
+	    setuid(pw->pw_uid) ||
+            seteuid(pw->pw_uid)) {
+        perror("ERROR setting user and group ID");
         exit(EXIT_FAILURE);
     }
 }
