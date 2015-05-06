@@ -58,12 +58,6 @@ const char *welcome =
     "|  Providing the world with useless document   |\n"
     "|    management services since April 2015!     |\n"
     "|                                              |\n"
-    "| We're so confident about our safety that we  |\n"
-    "| even provide you with the binary running on  |\n"
-    "| this server, so you can convince yourself!   |\n"
-    "|                                              |\n"
-    "|   Get it at http://52.28.35.47/adDOCtive     |\n"
-    "| Also, we use http://52.28.35.47/libc-x86.so  |\n"
     "'----------------------------------------------'\n"
     "\n";
 char *sys_dir, *sys_username;
