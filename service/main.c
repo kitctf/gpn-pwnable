@@ -309,7 +309,7 @@ void do_create_template() {
     strcat(path, buf);
     int fd = open(path, O_WRONLY | O_CREAT | O_EXCL, 0400);
     if (fd < 0) {
-        printf("Could open template file for writing, maybe it already exists?\n");
+        printf("Could not open template file for writing, maybe it already exists?\n");
         return;
     }
     // TODO better text
@@ -322,7 +322,7 @@ void do_create_template() {
         "\n"
         "  Hello Mr. [1!],\n"
         "\n"
-        "  I regret to inform your software [2!] sucks.\n"
+        "  I regret to inform you that your software [2!] sucks.\n"
         "\n"
         "  Sincerely yours,\n"
         "  [3!]\n"
