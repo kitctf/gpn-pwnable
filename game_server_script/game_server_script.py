@@ -239,12 +239,12 @@ def store(ip, id, flag):
             name = randomString(rand.randint(1,100))
             templates.append(name)
             content = randomText()
+            if random.randint(1,2) == 1:
+                content = insertRandom(content, "[1!]")
+                if random.randint(1,2) == 1:
+                    content = insertRandom(content, "[2!]")
             if i == main_template:
                 template_name = name
-                if random.randint(1,2) == 1:
-                    content = insertRandom(content, "[1!]")
-                    if random.randint(1,2) == 1:
-                        content = insertRandom(content, "[2!]")
                 content = insertRandom(content, "flag{%s}" % flag)
             a.create_template(name, content)
 
