@@ -163,7 +163,7 @@ rand = random.SystemRandom()
 words = open('english_words.txt').read().split()
 
 # valid alphabet, should not break the app
-alph = "".join(chr(c) for c in range(ord(" "), ord("~")+1) if chr(c) not in "'.%")
+alph = "".join(chr(c) for c in range(ord(" "), ord("~")+1) if chr(c) not in "'.%/")
 
 ##
 # Get random string of n characters
@@ -279,7 +279,11 @@ def retrieve(ip, id, flag):
         repl = randomString(rand.randint(5, 100))
         expect = content.replace("[1!]", repl)
         a.create_template(name, content)
-        if a.instantiate_template(name, repl, repl, repl) != expect:
+        have = a.instantiate_template(name, repl, repl, repl)
+        if have != expect:
+            print have
+            print "=========="
+            print expect
             error("Template instantiation does not seem to work anymore")
             return GARBLED
 
