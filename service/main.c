@@ -8,7 +8,7 @@
 #include <arpa/inet.h>
 #include <dirent.h>
 #include <fcntl.h>
-#include <linux/limits.h>
+/*#include <linux/limits.h>*/
 #include <netdb.h>
 #include <netinet/in.h>
 #include <pwd.h>
@@ -18,6 +18,8 @@
 #include <unistd.h>
 
 #define PROGNAME "adDOCtive"
+
+#define PATH_MAX 4096
 
 // declarations
 ssize_t writeall(int fd, const unsigned char *buf, size_t len);
@@ -29,6 +31,7 @@ void setup_user_dir();
 void do_exit();
 void do_login();
 void do_register();
+void do_list_users();
 void do_logout();
 void do_show_user_info();
 void do_change_pw();
@@ -79,6 +82,7 @@ struct Command pre_login_commands[] = {
     { &do_exit, "Exit" },
     { &do_register, "Register" },
     { &do_login, "Login" },
+    { &do_list_users, "Show users" },
 };
 
 // implementations
@@ -195,6 +199,27 @@ void do_register() {
         printf("\n");
     } else {
         printf("This user already exists!\n");
+    }
+}
+
+void do_list_users() {
+    printf("Available users:\n");
+    char path[PATH_MAX] = {0};
+    // BUG: stack-based overrun
+    strcat(path, sys_dir);
+    strcat(path, "/users");
+    DIR *dir = opendir(path);
+    if (!dir) {
+        printf("Something went terribly wrong :(\n");
+        return;
+    }
+    struct dirent *ent;
+    while ((ent = readdir(dir))) {
+        if (ent->d_name[0] != '.') {
+            // BUG: format string
+            printf(ent->d_name);
+            puts("");
+        }
     }
 }
 
