@@ -11,4 +11,4 @@ echo "Host: $host"
 echo "Port: $port"
 echo "Directory: $dir"
 echo "Username: $username"
-socat tcp4-l:$port,bind=$host,fork,reuseaddr exec:"./adDOCtive $dir $username"
+socat tcp4-l:$port,bind=$host,fork,reuseaddr exec:"./adDOCtive $dir $username",stderr
