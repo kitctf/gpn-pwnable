@@ -255,8 +255,15 @@ void do_show_template() {
     int fd = open(path, O_RDONLY);
     if (fd < 0) {
         printf("Template not found!\n");
-        return;
     }
+    printf("Template created at ");
+    char cmd[1024] = {0};
+    // BUG: stack-based overrun (hard to exploit, no null-bytes)
+    strcat(cmd, "ls -l '");
+    strcat(cmd, buf);
+    strcat(cmd, "' | awk '{print $6, $7 \", \" $8}'");
+    // BUG: shell injection (critical)
+    system(cmd);
     size_t len;
     while ((len = read(fd, buf, 1024)) > 0)
         fwrite(buf, len, 1, stdout);
