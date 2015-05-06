@@ -4,6 +4,8 @@ Run as root:
 
     # chown -R root:root /path/to/gpn-pwnable
     # chmod 700 /path/to/gpn-pwnable
+    # cd /path/to/gpn-pwnable/service
+    # make
     # useradd gpn
     # mkdir /home/gpn
     # cd /home/gpn
@@ -19,7 +21,7 @@ You can serve the binary via socat or xinetd
 
 Run as root:
 
-    # screen
+    # screen -S service
     # cd /path/to/gpn-pwnable/service
     # ./run.sh 0.0.0.0 1234 /home/gpn gpn
 
@@ -36,6 +38,15 @@ every second:
 
 Run as root:
 
-    # screen
+    # screen -S protect
     # cd /home/gpn
     # /path/to/gpn-pwnable/service/protect.sh
+
+## Cleanup / Reset
+
+If you want to reset the application state, you need to remove the users
+directory. Since it has the +a attribute set, you need to remove it first.
+The clean.sh script does the job for you:
+
+    # cd /home/gpn
+    # /path/to/gpn-pwnable/service/clean.sh
