@@ -167,7 +167,7 @@ void setup_user_dir(const char *dir) {
     strcat(path, dir);
     // BUG: stack-based overrun
     strcat(path, "/templates");
-    mkdir(path, 0700);
+    mkdir(path, 0755);
 }
 
 void do_register() {
@@ -181,10 +181,10 @@ void do_register() {
         exit(0);
     char path[PATH_MAX] = {0};
     build_user_path(path);
-    if (!mkdir(path, 0700)) {
+    if (!mkdir(path, 0755)) {
         setup_user_dir(path);
         strcat(path, "/password");
-        int fd = open(path, O_CREAT | O_EXCL | O_WRONLY, 0400);
+        int fd = open(path, O_CREAT | O_EXCL | O_WRONLY, 0644);
         writeall(fd, (unsigned char*)password, strlen(password));
         close(fd);
         printf("Registered successfully, you can now log in as ");
