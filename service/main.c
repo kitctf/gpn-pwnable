@@ -301,7 +301,7 @@ void do_create_template() {
     // BUG: stack-based overrun (hard to exploit, no null-bytes)
     // BUG: local file inclusion
     strcat(path, buf);
-    int fd = open(path, O_WRONLY | O_CREAT | O_EXCL, 0400);
+    int fd = open(path, O_WRONLY | O_CREAT | O_EXCL, 0644);
     if (fd < 0) {
         printf("Could not open template file for writing, maybe it already exists?\n");
         return;
