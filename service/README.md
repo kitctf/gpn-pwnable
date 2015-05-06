@@ -2,7 +2,7 @@
 
 Run as root:
 
-    # chown root:root /path/to/gpn-pwnable
+    # chown -R root:root /path/to/gpn-pwnable
     # chmod 700 /path/to/gpn-pwnable
     # useradd gpn
     # mkdir /home/gpn
