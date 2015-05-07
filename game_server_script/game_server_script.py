@@ -2,6 +2,7 @@
 import pickle
 import random
 import socket
+import string
 import sys
 import traceback
 import os
@@ -166,8 +167,11 @@ alph = "".join(chr(c) for c in range(ord(" "), ord("~")+1) if chr(c) not in "'.%
 ##
 # Get random string of n characters
 ##
-def randomString(n):
+def randomString(n, alph=alph):
     return ''.join(rand.choice(alph) for _ in range(n))
+
+def randomName(n):
+    return randomString(n, string.ascii_uppercase + string.digits)
 
 def randomWord():
     return rand.choice(words)
@@ -214,7 +218,7 @@ def connect(ip):
 ##
 def store(ip, id, flag):
     try:
-        username = randomString(rand.randint(6, 10))
+        username = randomName(rand.randint(6, 10))
         password = randomString(50)
         templates = []
 
@@ -234,7 +238,7 @@ def store(ip, id, flag):
         main_template = random.randrange(0,num_templates)
         # create templates
         for i in range(num_templates):
-            name = randomString(rand.randint(1,100))
+            name = randomName(rand.randint(1,100))
             templates.append(name)
             content = randomText()
             if random.randint(1,2) == 1:
@@ -271,7 +275,7 @@ def retrieve(ip, id, flag):
             return GARBLED
 
         # test template instantiation
-        name = randomString(rand.randint(5,10))
+        name = randomName(rand.randint(5,10))
         content = randomText()
         content = insertRandom(content, "[1!]")
         repl = randomString(rand.randint(5, 100))
