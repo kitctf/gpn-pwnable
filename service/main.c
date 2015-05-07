@@ -370,9 +370,11 @@ void do_instantiate_template() {
             exit(0);
     }
     for (int i = 0; i < tmpl_size; ++i) {
-        if (tmpl[i] == '[') tmpl[i] = '%';
-        if (tmpl[i] == '!') tmpl[i] = '$';
-        if (tmpl[i] == ']') tmpl[i] = 's';
+        if (tmpl[i] == '[' && tmpl[i+2] == '!' && tmpl[i+3] == ']') {
+            tmpl[i] = '%';
+            tmpl[i+2] = '$';
+            tmpl[i+3] = 's';
+        }
     }
     printf("Here's your final document, ready for copy & paste:\n");
     // BUG: format string
