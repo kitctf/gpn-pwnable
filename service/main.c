@@ -157,8 +157,7 @@ void do_login() {
         printf("Login failed! Bye.\n");
         return;
     }
-    // BUG: format string
-    printf("Hi "); printf(username); printf(", how are you today?\n");
+    printf("Hi %s, how are you today?\n");
     handle_post_login();
 }
 
@@ -177,6 +176,7 @@ void do_register() {
     if (!gets(username))
         exit(0);
     printf("Password: ");
+    // BUG: BSS buffer overrun
     if (!gets(password))
         exit(0);
     char path[PATH_MAX] = {0};
@@ -187,10 +187,7 @@ void do_register() {
         int fd = open(path, O_CREAT | O_EXCL | O_WRONLY, 0644);
         writeall(fd, (unsigned char*)password, strlen(password));
         close(fd);
-        printf("Registered successfully, you can now log in as ");
-        // BUG: format string
-        printf(username);
-        printf("\n");
+        printf("Registered successfully, you can now log in as %s\n", username);
     } else {
         printf("This user already exists!\n");
     }
@@ -210,9 +207,7 @@ void do_list_users() {
     struct dirent *ent;
     while ((ent = readdir(dir))) {
         if (ent->d_name[0] != '.') {
-            // BUG: format string
-            printf(ent->d_name);
-            puts("");
+            printf("%s\n", ent->d_name);
         }
     }
 }
@@ -252,9 +247,7 @@ void do_list_templates() {
     struct dirent *ent;
     while ((ent = readdir(dir))) {
         if (ent->d_name[0] != '.') {
-            // BUG: format string
-            printf(ent->d_name);
-            puts("");
+            printf("%s\n", ent->d_name);
         }
     }
 }
@@ -401,7 +394,7 @@ void handle_pre_login() {
         printf("------------------------------\n");
         // BUG: out-of-bounds read+jmp. can be used for auth bypass by jumping into
         // post_login_commands after setting the username buffer via failed
-        // login and then by typing in a negative number (not -1 though, it's
+        // login and then by typing in a negative number (not -1 though, it
         // represents invalid input)
         pre_login_commands[action].func();
     }
