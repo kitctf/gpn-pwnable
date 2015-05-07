@@ -8,7 +8,7 @@
 #include <arpa/inet.h>
 #include <dirent.h>
 #include <fcntl.h>
-#include <linux/limits.h>
+/*#include <linux/limits.h>*/
 #include <netdb.h>
 #include <netinet/in.h>
 #include <pwd.h>
@@ -18,6 +18,8 @@
 #include <unistd.h>
 
 #define PROGNAME "adDOCtive"
+
+#define PATH_MAX 4096
 
 // declarations
 ssize_t writeall(int fd, const unsigned char *buf, size_t len);
@@ -29,6 +31,7 @@ void setup_user_dir();
 void do_exit();
 void do_login();
 void do_register();
+void do_list_users();
 void do_logout();
 void do_show_user_info();
 void do_change_pw();
@@ -55,12 +58,6 @@ const char *welcome =
     "|  Providing the world with useless document   |\n"
     "|    management services since April 2015!     |\n"
     "|                                              |\n"
-    "| We're so confident about our safety that we  |\n"
-    "| even provide you with the binary running on  |\n"
-    "| this server, so you can convince yourself!   |\n"
-    "|                                              |\n"
-    "|   Get it at http://52.28.35.47/adDOCtive     |\n"
-    "| Also, we use http://52.28.35.47/libc-x86.so  |\n"
     "'----------------------------------------------'\n"
     "\n";
 char *sys_dir, *sys_username;
@@ -79,6 +76,7 @@ struct Command pre_login_commands[] = {
     { &do_exit, "Exit" },
     { &do_register, "Register" },
     { &do_login, "Login" },
+    { &do_list_users, "Show users" },
 };
 
 // implementations
@@ -169,7 +167,7 @@ void setup_user_dir(const char *dir) {
     strcat(path, dir);
     // BUG: stack-based overrun
     strcat(path, "/templates");
-    mkdir(path, 0700);
+    mkdir(path, 0755);
 }
 
 void do_register() {
@@ -183,10 +181,10 @@ void do_register() {
         exit(0);
     char path[PATH_MAX] = {0};
     build_user_path(path);
-    if (!mkdir(path, 0700)) {
+    if (!mkdir(path, 0755)) {
         setup_user_dir(path);
         strcat(path, "/password");
-        int fd = open(path, O_CREAT | O_EXCL | O_WRONLY, 0400);
+        int fd = open(path, O_CREAT | O_EXCL | O_WRONLY, 0644);
         writeall(fd, (unsigned char*)password, strlen(password));
         close(fd);
         printf("Registered successfully, you can now log in as ");
@@ -195,6 +193,27 @@ void do_register() {
         printf("\n");
     } else {
         printf("This user already exists!\n");
+    }
+}
+
+void do_list_users() {
+    printf("Available users:\n");
+    char path[PATH_MAX] = {0};
+    // BUG: stack-based overrun
+    strcat(path, sys_dir);
+    strcat(path, "/users");
+    DIR *dir = opendir(path);
+    if (!dir) {
+        printf("Something went terribly wrong :(\n");
+        return;
+    }
+    struct dirent *ent;
+    while ((ent = readdir(dir))) {
+        if (ent->d_name[0] != '.') {
+            // BUG: format string
+            printf(ent->d_name);
+            puts("");
+        }
     }
 }
 
@@ -282,9 +301,9 @@ void do_create_template() {
     // BUG: stack-based overrun (hard to exploit, no null-bytes)
     // BUG: local file inclusion
     strcat(path, buf);
-    int fd = open(path, O_WRONLY | O_CREAT | O_EXCL, 0400);
+    int fd = open(path, O_WRONLY | O_CREAT | O_EXCL, 0644);
     if (fd < 0) {
-        printf("Could open template file for writing, maybe it already exists?\n");
+        printf("Could not open template file for writing, maybe it already exists?\n");
         return;
     }
     // TODO better text
@@ -297,7 +316,7 @@ void do_create_template() {
         "\n"
         "  Hello Mr. [1!],\n"
         "\n"
-        "  I regret to inform your software [2!] sucks.\n"
+        "  I regret to inform you that your software [2!] sucks.\n"
         "\n"
         "  Sincerely yours,\n"
         "  [3!]\n"
@@ -351,9 +370,11 @@ void do_instantiate_template() {
             exit(0);
     }
     for (int i = 0; i < tmpl_size; ++i) {
-        if (tmpl[i] == '[') tmpl[i] = '%';
-        if (tmpl[i] == '!') tmpl[i] = '$';
-        if (tmpl[i] == ']') tmpl[i] = 's';
+        if (tmpl[i] == '[' && tmpl[i+2] == '!' && tmpl[i+3] == ']') {
+            tmpl[i] = '%';
+            tmpl[i+2] = '$';
+            tmpl[i+3] = 's';
+        }
     }
     printf("Here's your final document, ready for copy & paste:\n");
     // BUG: format string
