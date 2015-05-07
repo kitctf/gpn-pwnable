@@ -1,11 +1,8 @@
 #!/usr/bin/env python2
-import os
-import random
-import re
-import sys
-import socket
-import string
 import pickle
+import random
+import socket
+import sys
 import traceback
 
 PORT = 1234
@@ -180,7 +177,7 @@ def randomToken():
     if x <= 7:
         return w
     if x <= 9:
-        return w[0].upper() + w[1]
+        return w[0].upper() + w[1:]
     return w.upper()
 
 def randomWhitespace():
@@ -281,9 +278,13 @@ def retrieve(ip, id, flag):
         a.create_template(name, content)
         have = a.instantiate_template(name, repl, repl, repl)
         if have != expect:
-            print have
-            print "=========="
-            print expect
+            pickle.dump({
+                'have': have,
+                'expect': expect,
+                'name': name,
+                'content': content,
+                'repl': repl,
+            }, open(STORAGE + id + ".bugdump.p", "wb"))
             error("Template instantiation does not seem to work anymore")
             return GARBLED
 
