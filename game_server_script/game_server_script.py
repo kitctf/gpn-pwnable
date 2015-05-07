@@ -308,6 +308,8 @@ def retrieve(ip, id, flag):
 # Main
 ##
 def main():
+    if not os.path.exists(STORAGE):
+            os.makedirs(STORAGE)
     if len(sys.argv) < 5:
         error("Usage: " + sys.argv[0] + " $action $ip $id $flag")
         print("Internal gameserver script error")
